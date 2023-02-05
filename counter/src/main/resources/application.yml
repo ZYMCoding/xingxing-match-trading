@@ -1,11 +1,28 @@
+server:
+  port: 8090
 spring:
   datasource:
     url: jdbc:mysql://47.113.188.108:3306/match_trading?serverTimezone=Asia/Shanghai
     username: root
     password: Zym.141592
     driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    url: redis://Zym.141592@47.113.188.108:6379
+    timeout: 6000ms
 mybatis:
   mapper-locations: classpath:com/star/counter/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
     jdbc-type-for-null: null
+
+#缓存过期时间
+cacheexpire:
+  captcha: 100
+  account: 3600
+  order: 36000
+#机器位置
+counter:
+  id-worker:
+    id: 12
+    dataCenterId: 0    #机房ID
+    workerId: 0    #机柜ID
