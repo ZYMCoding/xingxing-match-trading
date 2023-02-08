@@ -5,6 +5,10 @@ package com.star.counter.bean.res;
  */
 public class CounterRes {
 
+    public static final int SUCCESS = 0;
+    public static final int RELOGIN = 1;
+    public static final int FAIL = 2;
+
     private int code;
 
     private String message;
@@ -20,7 +24,7 @@ public class CounterRes {
     }
 
     public CounterRes(Object data) {
-        this(0, "", data);
+        this(SUCCESS, "", data);
     }
 
     public int getCode() {

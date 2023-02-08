@@ -33,6 +33,8 @@
 </template>
 <script>
 
+    import {logout} from "../api/loginApi";
+
     export default {
         data() {
             return {
@@ -51,8 +53,7 @@
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if (command == 'loginout') {
-                    //TODO logout
-                    // logout();
+                    logout();
                 }
             },
             // 侧边栏折叠

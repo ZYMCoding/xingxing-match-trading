@@ -71,12 +71,9 @@ export default {
     },
     //加载立刻执行
     created(){
-
         if(Boolean(this.$route.query.msg)){
             this.$message.info(this.$route.query.msg + "");
         }
-
-
         this.getCode();
     },
     methods: {

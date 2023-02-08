@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper是根标签，namespace属性：在Mybatis全局范围内找到一个具体的Mapper配置 -->
+<!-- 引入接口后，为了方便通过接口全类名来找到Mapper配置文件，所以通常将namespace属性设置为接口全类名 -->
+<mapper namespace="com.star.counter.mapper.BalanceMapper">
+
+    <select id="queryBalanceByUid" resultType="java.lang.Long">
+        SELECT balance FROM t_user WHERE uid = #{uid}
+    </select>
+</mapper>
