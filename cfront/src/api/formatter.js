@@ -13,9 +13,9 @@ export const moneyFormat = (money) => {
 
 //委托方向
 export const directionFormat = (direction) => {
-    if (direction == constants.BUY) {
+    if (direction === constants.BUY) {
         return "买入";
-    } else if (direction == constants.SELL) {
+    } else if (direction === constants.SELL) {
         return "卖出";
     } else {
         return "未知";

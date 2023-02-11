@@ -3,3 +3,5 @@
 /counter/target/
 /counter/counter.iml
 /counter/src/test/
+/gateway/target/
+/gateway/src/test/

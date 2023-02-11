@@ -22,4 +22,6 @@ public class TradeInfo {
     private long price;
     private long tcount;
     private int oid;
+    private String date;
+    private String time;
 }

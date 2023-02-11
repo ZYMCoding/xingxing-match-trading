@@ -50,7 +50,7 @@ public class AccountServiceImpl implements AccountService {
             //增加唯一ID作为身份认证标志
             account.setToken(String.valueOf(snowflakeIdWorker.nextId()));
             ObjectMapper objectMapper = new ObjectMapper();
-            //存入缓存,key为标识符,value为account对应的json
+            //存入缓存,token为标识符,value为account对应的json
             redisStringCache.cache(account.getToken(), objectMapper.writeValueAsString(account), CacheType.ACCOUNT);
             //更新登陆时间
             Date date = new Date();

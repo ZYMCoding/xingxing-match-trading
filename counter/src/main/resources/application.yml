@@ -22,7 +22,6 @@ cacheexpire:
   order: 36000
 #机器位置
 counter:
-  id-worker:
-    id: 12
-    dataCenterId: 0    #机房ID
-    workerId: 0    #机柜ID
+  id: 12
+  dataCenterId: 0    #机房ID
+  workerId: 0    #机柜ID

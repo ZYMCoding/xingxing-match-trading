@@ -7,7 +7,8 @@
 <mapper namespace="com.star.counter.mapper.TradeMapper">
 
     <select id="queryTradeByUid" resultType="com.star.counter.bean.TradeInfo">
-        SELECT t.id, t.uid, t.code, s.name, t.direction, t.price, t.tcount
-        FROM t_trade t, t_stock s;
+        SELECT t.id, t.uid, t.code, s.name, t.direction, t.price, t.tcount, t.date, t.time
+        FROM t_trade t, t_stock s
+        WHERE t.uid = #{uid} AND t.code = s.code
     </select>
 </mapper>

@@ -8,8 +8,8 @@ export const constants = {
     CANCEL_ORDER: 1,
 
     //价格类型
-    LIMIT: 0,
-    MARKET: 1,
+    LIMIT: 0,    //限价委托
+    MARKET: 1,   //市价委托
 
     //买卖方向
     BUY: 0,

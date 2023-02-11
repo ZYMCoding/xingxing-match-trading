@@ -1,5 +1,6 @@
 package com.star.counter.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderInfo {
     private int id;
     private long uid;

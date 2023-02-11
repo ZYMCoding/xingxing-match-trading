@@ -90,7 +90,7 @@ export default {
 
         //登录回调函数
         loginCallback(code, msg, acc) {
-            if (code == 2) {
+            if (code === 2) {
                 //登录失败
                 this.$message.error(msg);
                 this.logining = false;
