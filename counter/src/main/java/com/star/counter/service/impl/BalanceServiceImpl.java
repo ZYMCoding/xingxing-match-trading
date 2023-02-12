@@ -16,4 +16,14 @@ public class BalanceServiceImpl implements BalanceService {
         Long balance = balanceMapper.queryBalanceByUid(uid);
         return balance;
     }
+
+    @Override
+    public void addBalance(long uid, long balance) {
+        balanceMapper.addBalance(uid, balance);
+    }
+
+    @Override
+    public void minusBalance(long uid, long balance) {
+        balanceMapper.addBalance(uid, -balance);
+    }
 }

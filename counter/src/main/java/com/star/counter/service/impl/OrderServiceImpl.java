@@ -8,9 +8,14 @@ import com.star.counter.bean.OrderInfo;
 import com.star.counter.bean.PosiInfo;
 import com.star.counter.cache.CacheType;
 import com.star.counter.cache.RedisStringCache;
+import com.star.counter.gateway.MsgTrans;
+import com.star.counter.mapper.BalanceMapper;
 import com.star.counter.mapper.OrderMapper;
 import com.star.counter.property.CounterProperty;
+import com.star.counter.service.api.BalanceService;
 import com.star.counter.service.api.OrderService;
+import com.star.counter.service.api.PosiService;
+import com.star.counter.util.IDConverter;
 import com.star.counter.util.TimeformatUtil;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +39,19 @@ public class OrderServiceImpl implements OrderService {
     OrderMapper orderMapper;
 
     @Autowired
+    BalanceMapper balanceMapper;
+
+    @Autowired
     CounterProperty counterProperty;
+
+    @Autowired
+    BalanceService balanceService;
+
+    @Autowired
+    PosiService posiService;
+
+    @Autowired
+    MsgTrans msgTrans;
 
     @Override
     public List<OrderInfo> getOrderListByUid(long uid) throws JsonProcessingException {
@@ -86,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 发送订单信息
+     * 发送订单信息到网关同时将订单信息保存到数据库中
      * @param uid 用户id
      * @param type 委托指令的类型
      * @param timestamp 时间戳
@@ -97,8 +114,8 @@ public class OrderServiceImpl implements OrderService {
      * @param ordertype 委托类型
      * @return 委托信息是否保存成功
      */
-    public boolean sendOrder(long uid, short type, long timestamp, int code,
-                             byte direction, long price, long volume, byte ordertype) {
+    public boolean sendOrder(long uid, short type, long timestamp, int code, byte direction, long price, long volume, byte ordertype) {
+        //具有final字段的类的初始化：类上有lombok的@builder注解，该注解通过生成内部类来进行初始化
         final OrderCmd orderCmd = OrderCmd.builder()
                 .type(CmdType.of(type))
                 .timestamp(timestamp)
@@ -114,8 +131,24 @@ public class OrderServiceImpl implements OrderService {
         int oid = saveOrder(orderCmd);
         if (oid < 0) {
             return false;
-        } else {
-            //TODO 发送网关
+        } else {    //成功入库后才发送OrderCmd对象
+            //立即调整资金持仓数据
+            if (orderCmd.direction == OrderDirection.BUY) {
+                //买则调整资金数据
+                balanceService.minusBalance(uid, price * volume);
+            } else if (orderCmd.direction == OrderDirection.SELL){
+                //卖则调整持仓数据
+                posiService.minusPosi(uid, code, volume, price);
+            } else {
+                log.error("wrong direction[{}], ordercmd:{}", orderCmd.direction, orderCmd);
+                return false;
+            }
+            //生成全局ID 组装ID [ 柜台ID 委托ID ], 委托ID即为数据库返回的主键ID
+            orderCmd.oid = IDConverter.combineIntToLong(counterProperty.getId(), oid);
+
+            // TODO 打包委托(orderCmd -> commonMsg -> TCP数据流)
+            msgTrans.sendOrder(orderCmd);
+
             log.info(orderCmd);
             return true;
         }

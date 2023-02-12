@@ -13,4 +13,11 @@ public interface BalanceMapper {
      * @return 用户资金
      */
     Long queryBalanceByUid(long uid);
+
+    /**
+     * 增加用户的资金
+     * @param uid 用户id
+     * @param balance 需要增加的资金
+     */
+    void addBalance(long uid, long balance);
 }

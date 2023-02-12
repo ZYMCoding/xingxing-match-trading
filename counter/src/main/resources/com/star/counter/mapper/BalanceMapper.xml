@@ -9,4 +9,10 @@
     <select id="queryBalanceByUid" resultType="java.lang.Long">
         SELECT balance FROM t_user WHERE uid = #{uid}
     </select>
+
+    <update id="addBalance">
+        UPDATE t_user SET balance = balance + #{balance}
+        WHERE uid = #{uid}
+    </update>
+
 </mapper>

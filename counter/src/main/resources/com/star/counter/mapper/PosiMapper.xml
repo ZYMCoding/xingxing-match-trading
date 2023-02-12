@@ -11,4 +11,21 @@
         FROM t_posi t, t_stock s
         WHERE uid = #{uid} AND t.code = s.code
     </select>
+
+    <update id="addPosi">
+        UPDATE t_posi SET count = count + #{volume}, cost = cost + #{volume} * #{price}
+        WHERE uid = #{uid} AND code = #{code}
+    </update>
+
+    <select id="queryOnePosi" resultType="com.star.counter.bean.PosiInfo">
+        SELECT t.id, t.uid, t.code, s.name, t.cost, t.count
+        FROM t_posi t, t_stock s
+        WHERE uid = #{uid} AND t.code = #{code} AND t.code = s.code
+    </select>
+
+    <insert id="insetPosi">
+        INSERT INTO t_posi(uid, code, cost, count)
+        VALUES (#{uid}, #{code}, #{volume} * #{price}, #{volume})
+    </insert>
+
 </mapper>

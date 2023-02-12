@@ -11,4 +11,7 @@ public class CounterProperty {
     private short id;
     private long dataCenterId;
     private long workerId;
+    private String sendIp;
+    private int sendPort;
+    private short gatewayId;
 }

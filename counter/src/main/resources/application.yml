@@ -25,3 +25,6 @@ counter:
   id: 12
   dataCenterId: 0    #机房ID
   workerId: 0    #机柜ID
+  sendIp: 127.0.0.1
+  sendPort: 8091
+  gatewayId: 1001

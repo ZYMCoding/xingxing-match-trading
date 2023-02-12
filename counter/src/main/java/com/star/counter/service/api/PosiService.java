@@ -8,4 +8,8 @@ import java.util.List;
 public interface PosiService {
 
     List<PosiInfo> getPosiListByUid(long uid) throws JsonProcessingException;
+
+    void addPosi(long uid, int code, long volume, long price);
+
+    void minusPosi(long uid, int code, long volume, long price);
 }

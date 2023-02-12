@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,5 +44,23 @@ public class PosiServiceImpl implements PosiService {
             List<PosiInfo> posiInfos = objectMapper.readValue(posiS, new TypeReference<List<PosiInfo>>() {});
             return posiInfos;
         }
+    }
+
+    @Override
+    public void addPosi(long uid, int code, long volume, long price) {
+        //判断持仓是否已经存在
+        PosiInfo posiInfo = posiMapper.queryOnePosi(uid, code);
+        if (posiInfo == null) {
+            //新增持仓
+            posiMapper.insetPosi(uid, code, volume, price);
+        } else {
+            //修改持仓
+            posiMapper.addPosi(uid, code, volume, price);
+        }
+    }
+
+    @Override
+    public void minusPosi(long uid, int code, long volume, long price) {
+        addPosi(uid, code, -volume, price);
     }
 }
