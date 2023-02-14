@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
                 //买则调整资金数据
                 balanceService.minusBalance(uid, price * volume);
             } else if (orderCmd.direction == OrderDirection.SELL){
-                //卖则调整持仓数据
+                //卖则调整持仓数据(建仓/修改现有持仓)
                 posiService.minusPosi(uid, code, volume, price);
             } else {
                 log.error("wrong direction[{}], ordercmd:{}", orderCmd.direction, orderCmd);
@@ -146,10 +146,9 @@ public class OrderServiceImpl implements OrderService {
             //生成全局ID 组装ID [ 柜台ID 委托ID ], 委托ID即为数据库返回的主键ID
             orderCmd.oid = IDConverter.combineIntToLong(counterProperty.getId(), oid);
 
-            // TODO 打包委托(orderCmd -> commonMsg -> TCP数据流)
+            // 打包委托和发送数据(orderCmd -> commonMsg -> TCP数据流)
             msgTrans.sendOrder(orderCmd);
-
-            log.info(orderCmd);
+            log.info(orderCmd.toString());
             return true;
         }
     }

@@ -72,7 +72,9 @@ public class ConnHandler implements Handler<NetSocket> {
                         commonMsg.setMsgNo(msgNo);
                         commonMsg.setBody(bufferBytes);
                         commonMsg.setTimestamp(System.currentTimeMillis());
+
                         msgHandler.onCounterData(commonMsg);
+
                         //复原，以读取下一个报文
                         bodyLength = -1;
                         checksum = -1;

@@ -2,10 +2,8 @@ package thirdpart.codec.impl;
 
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
-import org.springframework.stereotype.Component;
 import thirdpart.codec.api.BodyCodec;
 
-@Component
 public class BodyCodecImpl implements BodyCodec {
 
     @Override
@@ -18,4 +16,5 @@ public class BodyCodecImpl implements BodyCodec {
     public <T> T deserialize(byte[] bytes, Class<T> clazz) throws CodecException {
         return SerializerManager.getSerializer(SerializerManager.Hessian2).deserialize(bytes, clazz.getName());
     }
+
 }

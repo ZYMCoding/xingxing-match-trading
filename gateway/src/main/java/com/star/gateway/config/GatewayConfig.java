@@ -1,18 +1,14 @@
 package com.star.gateway.config;
 
 import com.star.gateway.handler.ConnHandler;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
-import io.vertx.core.net.NetSocket;
-import io.vertx.core.parsetools.RecordParser;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import thirdpart.checksum.api.CheckSum;
 import thirdpart.checksum.impl.CheckSumImpl;
 import thirdpart.codec.api.BodyCodec;
 
@@ -49,12 +45,20 @@ public class GatewayConfig {
 
     public void startup() {
         //启动TCP监听
+        initRecv();
 
-        //TODO 排队机交互
+        // TODO 排队机交互
     }
 
     public void initRecv() {
         NetServer netServer = vertx.createNetServer();
         netServer.connectHandler(new ConnHandler(this));
+        netServer.listen(recvPort, res -> {
+            if (res.succeeded()) {
+                log.info("gateway startup at port: {}", recvPort);
+            } else {
+                log.error("gateway startup fail");
+            }
+        });
     }
 }

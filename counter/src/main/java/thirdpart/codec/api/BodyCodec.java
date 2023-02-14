@@ -2,6 +2,7 @@ package thirdpart.codec.api;
 
 import com.alipay.remoting.exception.CodecException;
 
+// TODO 修复：NoClassDefFoundError: com/caucho/hessian/io/SerializerFactory
 public interface BodyCodec {
 
     /**

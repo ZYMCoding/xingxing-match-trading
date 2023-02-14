@@ -1,10 +1,12 @@
 package thirdpart.order;
 
 import lombok.Builder;
+import lombok.ToString;
 
 import java.io.Serializable;
 
 @Builder
+@ToString
 public class OrderCmd implements Serializable {
 
     public CmdType type;

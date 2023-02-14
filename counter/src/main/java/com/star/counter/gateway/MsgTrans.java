@@ -22,7 +22,7 @@ import static thirdpart.bean.MsgConstants.NORMAL;
 public class MsgTrans {
 
     @Autowired
-    private TcpDirectSender tcpDirectSender;
+    TcpDirectSender tcpDirectSender;
 
     @Autowired
     BodyCodec bodyCodec;
@@ -42,6 +42,7 @@ public class MsgTrans {
     @PostConstruct
     private void init() {
         tcpDirectSender.startUp();
+        log.info("TCPDirectSender start");
     }
 
     private CommonMsg generateMsg(byte[] data, short msgSrc, short msgDst, short msgType, byte status, long msgNo) {
@@ -57,19 +58,22 @@ public class MsgTrans {
         msg.setMsgType(msgType);
         msg.setStatus(status);
         msg.setMsgNo(msgNo);
+        msg.setBody(data);
         return msg;
     }
 
     public void sendOrder(OrderCmd orderCmd) {
         //将OrderCmd打包为CommonMsg
-        byte[] data = null;
+        byte[] data;
         try {
-            bodyCodec.serialize(orderCmd);
+            data = bodyCodec.serialize(orderCmd);   //将对象转为字节码放到报体中(Hessian2编码方式)
         } catch (Exception e) {
             log.error("encode error for ordercmd:{}", orderCmd, e);
             return;
         }
         CommonMsg commonMsg = generateMsg(data, counterProperty.getId(), counterProperty.getGatewayId(), COUNTER_NEW_ORDER, NORMAL, snowflakeIdWorker.nextId());
-        tcpDirectSender.send(msgCodec.encodeToBuffer(commonMsg));
+        //将封装好的CommonMsg编码为Buffer(按字节索引组装)
+        boolean send = tcpDirectSender.send(msgCodec.encodeToBuffer(commonMsg));
+        log.info("ordercmd has bean sent? {}", send);
     }
 }

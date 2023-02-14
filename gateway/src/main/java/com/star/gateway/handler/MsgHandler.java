@@ -35,6 +35,7 @@ public class MsgHandler {
             orderCmd = bodyCodec.deserialize(msg.getBody(), OrderCmd.class);
             //正式开发环境中不能在运行时输出
             log.info("recv cmd:{}", orderCmd);
+            log.info(orderCmd.toString());
             //写入内存：将OrderCmd对象存储到静态OrderCmdContainer内，失败时日志输出
             if (!OrderCmdContainer.getInstance().cache(orderCmd)) {
                 log.error("gateway queue insert fail, queue length:{}, order:{}", OrderCmdContainer.getInstance().size(), orderCmd);
