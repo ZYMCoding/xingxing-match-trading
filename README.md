@@ -1,2 +1,22 @@
-# xingxing-match-trading
-A full-stack match trading platform use spring boot, vue, element-ui, vertx and disruptor.
+# Element-ui + Spring Cloud + Vertx 的撮合交易系统
+## 前端代码在cfront下，使用Element-UI
+## 柜台服务：
+### 相关技术：
+#### 1. 登录
+#### 2. 账户持仓、资金等信息的查询
+#### 3. 发送买/卖委托
+用户进行买/卖操作时，修改数据库中用户相关信息并将相关数据发送到网关
+
+发送前需要将订单信息的类通过`Hessian2`进行序列化作为发送报文的包体
+
+之后将报体长度、信息类型、校验和等信息作为报头和报体一起组装成为CommonMsg类并发送
+
+## 排队机
+### 设计目的
+为了保证交易的公平性，排除网络延迟等外部因素对委托排序的影响，
+
+所以需要排队机来主动从各个网关获取订单信息并进行排序，排序规则如下：
+1. 时间优先
+2. 价格优先
+3. 量优先
+### 相关技术
