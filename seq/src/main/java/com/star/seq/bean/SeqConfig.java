@@ -72,6 +72,7 @@ public class SeqConfig {
         public void onConnected(AbstractChannel abstractChannel) {
             String remoteAddr = abstractChannel.remoteAddress().toString();
             log.info("connect to gateway: {}", remoteAddr);
+            //config.refer()可以拿到Provider传入的代理类（）
             fetchServiceMap.put(remoteAddr, config.refer());   //key为连接地址，value为代理的服务类
         }
 

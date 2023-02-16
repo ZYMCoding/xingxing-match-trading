@@ -1,5 +1,8 @@
 package com.star.gateway.config;
 
+import com.alipay.sofa.rpc.config.ProviderConfig;
+import com.alipay.sofa.rpc.config.ServerConfig;
+import com.star.gateway.container.OrderCmdContainer;
 import com.star.gateway.handler.ConnHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
@@ -11,6 +14,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import thirdpart.checksum.impl.CheckSumImpl;
 import thirdpart.codec.api.BodyCodec;
+import thirdpart.fetchserv.api.FetchService;
 
 import java.io.File;
 
@@ -40,14 +44,25 @@ public class GatewayConfig {
         Element root = document.getRootElement();
         this.id = Short.parseShort(root.element("id").getText());
         this.recvPort = Integer.parseInt(root.element("recvport").getText());
-        log.info("GateWay ID:{}, Port:{}", id, recvPort);
+        this.fetchServPort = Integer.parseInt(root.element("fetchservport").getText());
+        log.info("GateWay ID:{}, Port:{}, FetchServPort: {}", id, recvPort, fetchServPort);
     }
 
     public void startup() {
         //启动TCP监听
         initRecv();
 
-        // TODO 排队机交互
+        //排队机交互
+        ServerConfig serverConfig = new ServerConfig()
+                .setPort(fetchServPort)
+                .setProtocol("bolt");
+        ProviderConfig<FetchService> providerConfig = new ProviderConfig<FetchService>()
+                .setInterfaceId(FetchService.class.getName())
+                //指定FetchService实现类来实现响应(直接从单例的Container获取即可)，理论上应该传入FetchService的实现类
+                .setRef(() -> OrderCmdContainer.getInstance().getAll())
+                .setServer(serverConfig);
+        providerConfig.export();
+        log.info("gateway startup fetchServ success at port: {}", fetchServPort);
     }
 
     public void initRecv() {

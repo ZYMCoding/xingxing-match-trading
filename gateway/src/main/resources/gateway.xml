@@ -8,4 +8,5 @@
     <recvport>8091</recvport>
 
     <!-- 排队机抓取服务端口 -->
+    <fetchservport>8890</fetchservport>
 </gateway>
