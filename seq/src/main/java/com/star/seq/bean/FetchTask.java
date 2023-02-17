@@ -38,48 +38,54 @@ public class FetchTask extends TimerTask {
         }
         log.info(orderCmds);
 
-        //对数据进行定序
-        //时间优先(先来的站前面) 价格优先 量优先
+        //时间优先(先来的站前面) 价格优先(买单价高先，卖单价低先) 量大优先
         orderCmds.sort(((o1, o2) -> {
-            if (o1.timestamp > o2.timestamp) {
-                return 1;   //o1排后面
-            } else if (o1.timestamp < o2.timestamp) {
-                return -1;
-            } else { //比价格，需要根据交易方向排序
-                if (o1.direction == OrderDirection.BUY) {
-                    if (o1.direction == o2.direction) {  //当委托均为买委托
-                        //买价格高排在前面
-                        if (o1.price > o2.price) {
-                            return -1;
-                        } else if (o1.price < o2.price) {
-                            return 1;
-                        } else {
-                            //量比较
-                        }
-                    } else {
-                        //方向不同，不影响结果（不用排序）
-                        return 0;
-                    }
-                } else if (o1.direction == OrderDirection.SELL) {
-                    if (o1.direction == o2.direction) {  //当委托均为卖委托
-                        //卖价格低排在前面
-                        if (o1.price > o2.price) {
-                            return 1;
-                        } else if (o1.price < o2.price) {
-                            return -1;
-                        } else {
-                            //量比较
-                        }
-                    } else {
-                        //方向不同，不影响结果（不用排序）
-                        return 0;
-                    }
-                } else {
-                    return 1;
-                }
+            int res = compareTime(o1, o2);
+            if (res != 0) {
+                return res;
             }
+            res = comparePrice(o1, o2);
+            if (res != 0) {
+                return res;
+            }
+            res = compareVolume(o1, o2);
+            return res;
         }));
 
+        // TODO 存储到KVStore 发送到撮合核心
+    }
+
+    private int compareTime(OrderCmd o1, OrderCmd o2) {
+        if (o1.timestamp > o2.timestamp) {
+            return 1;
+        } else if (o1.timestamp < o2.timestamp) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    private int comparePrice(OrderCmd o1, OrderCmd o2) {
+        if (o1.direction == o2.direction) {
+            if (o1.price > o2.price) {
+                //委托均为买时，价格高的在前，委托为卖，价格低的在前
+                return o1.direction == OrderDirection.BUY ? -1 : 1;
+            } else if (o1.price < o2.price) {
+                return o1.direction == OrderDirection.BUY ? -1 : 1;
+            } else {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    private int compareVolume(OrderCmd o1, OrderCmd o2) {
+        if (o1.volume > o2.volume) {  //价格高在前
+            return -1;
+        } else if (o1.volume < o2.volume) {
+            return 1;
+        }
+        return 0;
     }
 
     private List<OrderCmd> collectAllOrders(Map<String, FetchService> fetchServiceMap) {

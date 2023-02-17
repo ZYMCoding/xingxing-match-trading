@@ -29,4 +29,25 @@ JDK自带的UUID在系统吞吐过大时无法满足UUID的唯一性，[TwitterS
 1. [Leader election](https://youjiali1995.github.io/raft/etcd-raft-leader-election/)：使用主节点来引导所有数据同步
 2. Log Replication：日志复制，将日志同步到所有节点上
 3. 各个节点通过选举产生主节点，主节点将数据同步到其他节点上，主节点DOWN掉后，其他节点尝试重连并选举产生新的主节点，新节点的数据应该保持最新
+## 撮合核心
+### Disruptor进行快速撮合
 
+[Disruptor核心概念-中文](https://juejin.cn/post/6844903958180265997#heading-11)
+
+[LMAX Disruptor User Guide](https://lmax-exchange.github.io/disruptor/user-guide/index.html)
+
+#### 定长数组/预加载
+数组空间预先分配（Event对象事先准备），线程只会对Event进行赋值操作 
+#### CAS代替锁
+单线程写避免锁的使用
+#### Cache Padding（避免False share）：
+[理解Disruptor（上）-带你体会CPU高速缓存的风驰电掣](https://blog.csdn.net/weixin_30235225/article/details/102054127)
+- 缓存以缓存行作为基本单位，一个缓存行可储存不同数
+- 不同数据被不同线程修改后会导致缓存行失效（CPU Cache的MESI协议）
+- Cache Padding使每个缓存行只缓存一个数据防止对缓存的修改，虽然降低缓存利用率，但是提高缓存命中率
+#### Memory Barrier
+[中文文档-揭秘内存屏障](https://developer.aliyun.com/article/88523)
+
+- 使用volatile字段进行写操作，每次写操作后内存会将就的数据flush掉从而保证所有线程拿到的是最新的值
+- 下游消费者对上游消费者进行追踪，下游消费者拿到上游更新过的序列号之后才可以进行修改
+- 总之，Disruptor高性能的原理就在于实现无锁结构
