@@ -4,6 +4,7 @@ import com.alipay.sofa.jraft.rhea.LeaderStateListener;
 import com.alipay.sofa.jraft.rhea.client.DefaultRheaKVStore;
 import com.alipay.sofa.jraft.rhea.client.RheaKVStore;
 import com.alipay.sofa.jraft.rhea.options.RheaKVStoreOptions;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Log4j2
 @RequiredArgsConstructor
+@Data
 public class Node {
 
     @NonNull

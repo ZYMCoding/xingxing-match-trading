@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c3p0-config>
+    <default-config>
+        <property name="driverClass">com.mysql.cj.jdbc.Driver</property>
+        <property name="jdbcUrl">jdbc:mysql://47.113.188.108:3306/match_trading?serverTimezone=Asia/Shanghai</property>
+        <property name="user">root</property>
+        <property name="password">Zym.141592</property>
+        <property name="initialPoolSize">1</property>
+        <property name="maxPoolSize">3</property>
+        <property name="checkoutTimeout">3000</property>
+    </default-config>
+</c3p0-config>

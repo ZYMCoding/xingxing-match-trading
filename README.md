@@ -13,6 +13,13 @@ JDK自带的UUID在系统吞吐过大时无法满足UUID的唯一性，[TwitterS
 发送前需要将订单信息的类通过`Hessian2`进行序列化作为发送报文的包体
 
 之后将报体长度、信息类型、校验和等信息作为报头和报体一起组装成为CommonMsg类并发送
+
+发送时先将封装好的指令放入到阻塞队列中，创建线程对阻塞队列进行轮询，轮询到结果后写入vertx的NetSocket
+## 网关
+### 功能
+1. 启动vertx的server端，通过跟柜台client端相同的方法解开TCP包并同样通过`Hessian2`转换成委托类对象
+2. 使用sofa-rpc，将委托类对象写入单例的Container的阻塞队列中，然后创建`public List<OrderCmd> getAll()`方法作为Provider的实现类
+3. 发布服务以便排队机抓取
 ## 排队机
 ### 设计目的
 为了保证交易的公平性，排除网络延迟等外部因素对委托排序的影响，
@@ -29,7 +36,15 @@ JDK自带的UUID在系统吞吐过大时无法满足UUID的唯一性，[TwitterS
 1. [Leader election](https://youjiali1995.github.io/raft/etcd-raft-leader-election/)：使用主节点来引导所有数据同步
 2. Log Replication：日志复制，将日志同步到所有节点上
 3. 各个节点通过选举产生主节点，主节点将数据同步到其他节点上，主节点DOWN掉后，其他节点尝试重连并选举产生新的主节点，新节点的数据应该保持最新
+### 重要流程
+`new Timer().schedule(new FetchTask(this), 5000, 1000);`，通过jdk的Timer每1000ms进行抓取数据
 ## 撮合核心
+### 流程分析
+#### 接收委托流
+从排队机的广播中获取CmdPack字节流，发现数据包有误后则主动从排队机中获取
+#### 委托撮合
+#### 发布撮合结果
+通过MQTT协议进行在总线上进行发布
 ### Disruptor进行快速撮合
 
 [Disruptor核心概念-中文](https://juejin.cn/post/6844903958180265997#heading-11)

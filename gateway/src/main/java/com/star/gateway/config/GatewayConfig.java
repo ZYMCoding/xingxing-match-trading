@@ -57,11 +57,11 @@ public class GatewayConfig {
                 .setPort(fetchServPort)
                 .setProtocol("bolt");
         ProviderConfig<FetchService> providerConfig = new ProviderConfig<FetchService>()
-                .setInterfaceId(FetchService.class.getName())
+                .setInterfaceId(FetchService.class.getName())     //Provider指定接口的名字暴露给Consumer
                 //指定FetchService实现类来实现响应(直接从单例的Container获取即可)，理论上应该传入FetchService的实现类
                 .setRef(() -> OrderCmdContainer.getInstance().getAll())
                 .setServer(serverConfig);
-        providerConfig.export();
+        providerConfig.export();      //发布服务
         log.info("gateway startup fetchServ success at port: {}", fetchServPort);
     }
 

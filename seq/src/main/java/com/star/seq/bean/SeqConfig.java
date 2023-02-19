@@ -11,6 +11,9 @@ import com.alipay.sofa.rpc.listener.ChannelListener;
 import com.alipay.sofa.rpc.transport.AbstractChannel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.vertx.core.Vertx;
+import io.vertx.core.datagram.DatagramSocket;
+import io.vertx.core.datagram.DatagramSocketOptions;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import thirdpart.codec.api.BodyCodec;
@@ -46,6 +49,16 @@ public class SeqConfig {
      * KVStore集群有哪些地址
      */
     private String serverList;
+
+    /**
+     * 广播地址
+     */
+    private String multicastIp;
+
+    /**
+     * 广播端口
+     */
+    private int multicastPort;
 
     @NonNull
     private String fileName;
@@ -93,40 +106,33 @@ public class SeqConfig {
         //读取配置文件
         initConfig();
 
-        //初始化集群
+        //初始化集群(Raft算法的排队机集群)
         starSeqDbCluster();
 
-        // TODO 启动下游广播
+        //启动下游广播(初始化DatagramSocket，使用vertx进行初始化)
+        startMulticast();
 
-        // TODO 初始化网关连接
+        //初始化网关连接(对Consumer进行配置)
+        //同时利用Timer每间隔1s进行对数据的抓取(利用Consumer中RPC暴露的接口实现数据传输)
         startupFetch();
     }
 
-    /**
-     * 从网关中获得数据
-     * 逻辑:
-     * 1.从哪些网关抓取
-     * 2.通信方式
-     */
-    private void startupFetch() {
-        //将所有的网关连接放到Map中
-        String[] urls = fetchUrls.split(";");
-        for (String url : urls) {
-            //排队机为RPC框架中的消费者
-            ConsumerConfig<FetchService> consumerConfig = new ConsumerConfig<FetchService>()
-                    .setInterfaceId(FetchService.class.getName())   //连接的接口，上下游通信标准
-                    .setProtocol("bolt")    //RPC通信的协议:bolt
-                    .setTimeout(5000)       //超时设置
-                    .setDirectUrl(url);     //直连地址
-            consumerConfig.setOnConnect(Lists.newArrayList(new FetchChannelListener(consumerConfig)));  //可增加多个连接监听器,但列表只放一个
-            fetchServiceMap.put(url, consumerConfig.refer());    //Consumer第一次连上Provider时Listener中的onConnected不会执行
-        }
+    private void initConfig() throws IOException {
+        InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        this.dataPath = properties.getProperty("datapath");
+        this.serveUrl = properties.getProperty("serveurl");
+        this.serverList = properties.getProperty("serverlist");
+        this.fetchUrls = properties.getProperty("fetchurls");
+        this.multicastIp = properties.getProperty("multicastip");
+        this.multicastPort = Integer.parseInt(properties.getProperty("multicastport"));
 
-        /*
-          使用jdk的Timer进行从网关定时抓取数据的任务
-          参数分别为要执行的线程，延迟执行的时间，执行的频率
-         */
-        new Timer().schedule(new FetchTask(this), 5000, 1000);
+        log.info("datapath is: {}", this.dataPath);
+        log.info("serverurl is: {}", this.serveUrl);
+        log.info("serverlist is: {}", this.serverList);
+        log.info("multicastip is: {}", this.multicastIp);
+        log.info("multicastport is: {}", this.multicastPort);
     }
 
     /**
@@ -159,17 +165,37 @@ public class SeqConfig {
         Runtime.getRuntime().addShutdownHook(new Thread(node :: stop));
     }
 
-    private void initConfig() throws IOException {
-        InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
-        Properties properties = new Properties();
-        properties.load(inputStream);
-        this.dataPath = properties.getProperty("datapath");
-        this.serveUrl = properties.getProperty("serveurl");
-        this.serverList = properties.getProperty("serverlist");
-        this.fetchUrls = properties.getProperty("fetchurls");
-        log.info("datapath is: {}", this.dataPath);
-        log.info("serverurl is: {}", this.serveUrl);
-        log.info("serverlist is: {}", this.serverList);
+    //用vertx中的DatagramSocket实现广播
+    private DatagramSocket multicastSender;
+
+    private void startMulticast() {
+        multicastSender = Vertx.vertx().createDatagramSocket(new DatagramSocketOptions());
     }
 
+    /**
+     * 从网关中获得数据
+     * 逻辑:
+     * 1.从哪些网关抓取
+     * 2.通信方式
+     */
+    private void startupFetch() {
+        //将所有的网关连接放到Map中
+        String[] urls = fetchUrls.split(";");
+        for (String url : urls) {
+            //排队机为RPC框架中的消费者
+            ConsumerConfig<FetchService> consumerConfig = new ConsumerConfig<FetchService>()
+                    .setInterfaceId(FetchService.class.getName())   //连接的接口，上下游通信标准
+                    .setProtocol("bolt")    //RPC通信的协议:bolt
+                    .setTimeout(5000)       //超时设置
+                    .setDirectUrl(url);     //直连地址
+            //可增加多个连接监听器,但列表只放一个
+            consumerConfig.setOnConnect(Lists.newArrayList(new FetchChannelListener(consumerConfig)));
+            fetchServiceMap.put(url, consumerConfig.refer());    //Consumer第一次连上Provider时Listener中的onConnected不会执行
+        }
+        /*
+          使用jdk的Timer进行从网关定时抓取数据的任务
+          参数分别为要执行的线程，延迟执行的时间，执行的频率
+         */
+        new Timer().schedule(new FetchTask(this), 5000, 1000);
+    }
 }
