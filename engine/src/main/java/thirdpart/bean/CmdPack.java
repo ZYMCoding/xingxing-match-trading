@@ -1,4 +1,4 @@
-package com.star.seq.bean;
+package thirdpart.bean;
 
 
 import lombok.*;
@@ -7,11 +7,11 @@ import thirdpart.order.OrderCmd;
 import java.io.Serializable;
 import java.util.List;
 
-@ToString
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@Getter
+@Setter
+@ToString
 public class CmdPack implements Serializable {
 
     private long packNo;

@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
+import thirdpart.bean.CmdPack;
 import thirdpart.fetchserv.api.FetchService;
 import thirdpart.order.OrderCmd;
 import thirdpart.order.OrderDirection;
@@ -61,7 +62,6 @@ public class FetchTask extends TimerTask {
             return res;
         }));
 
-        // TODO 存储到KVStore 发送到撮合核心
         try {
             //生成PackNo并打包成Cmd
             long packNo = getPackNoFromStore();
