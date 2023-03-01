@@ -3,6 +3,7 @@ package thirdpart.bus.impl;
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.Vertx;
 import io.vertx.mqtt.MqttClient;
+import io.vertx.mqtt.MqttClientOptions;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,8 +26,7 @@ public class MQTTBusSenderImpl implements BusSender {
     @NonNull
     private MsgCodec msgCodec;
 
-    @NonNull
-    private Vertx vertx;
+    private Vertx vertx = Vertx.vertx();
 
     @Override
     public void startUp() {
@@ -35,7 +35,10 @@ public class MQTTBusSenderImpl implements BusSender {
     }
 
     private void mqttConnect() {
-        MqttClient mqttClient = MqttClient.create(vertx);
+        MqttClientOptions options = new MqttClientOptions()
+                .setMaxInflightQueue(Integer.MAX_VALUE);
+
+        MqttClient mqttClient = MqttClient.create(vertx, options);
         mqttClient.connect(port, ip, res -> {
             if (res.succeeded()) {
                 sender = mqttClient;

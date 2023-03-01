@@ -37,17 +37,50 @@ JDK自带的UUID在系统吞吐过大时无法满足UUID的唯一性，[TwitterS
 2. Log Replication：日志复制，将日志同步到所有节点上
 3. 各个节点通过选举产生主节点，主节点将数据同步到其他节点上，主节点DOWN掉后，其他节点尝试重连并选举产生新的主节点，新节点的数据应该保持最新
 ### 重要流程
-`new Timer().schedule(new FetchTask(this), 5000, 1000);`，通过jdk的Timer每1000ms进行抓取数据
+1. `new Timer().schedule(new FetchTask(this), 5000, 1000);`，通过jdk的Timer每1000ms进行抓取数据
+2. UDP广播，使用UDP的原因如下：
+    - UDP相较于TCP传输的报文简单，性能更好
+    - 排队机到撮合核心之间一般为内网环境，网络稳定，丢包概率小
+    - 在撮合核心接收时对自动递增的包号进行校验，从而判断从广播中获得的数据是否可用，解决UDP丢包问题
+    - 出现丢包状况时，撮合核心可以主动从KVStore里获取
+    - UDP支持一对多(组播)，可应对多个撮合核心
+```Java
+    //发送到撮合核心
+    seqConfig.getMulticastSender().send(
+            Buffer.buffer(serialize),    //vertx包装好的Buffer类
+            seqConfig.getMulticastPort(),
+            seqConfig.getMulticastIp(),
+            null    //不配置异步处理器
+    );
+```
 ## 撮合核心
 ### 流程分析
 #### 接收委托流
 1. 从排队机的广播中获取CmdPack字节流，字节流进行反序列化后根据packNo判断是否丢包
 2. 若广播中的序号更小，则说明丢包
 3. 出现丢包时，主动从排队机KVStore里抓取
-#### 委托撮合
+#### 数据结构
+1. 每一只股票对应一个OrderBook, OrderBook里的每一个价格对应一个OrderBucket
+2. OrderBook为NavigableMap(key具有一定顺序)，OrderBucket为LinkedHashMap(内部维护一个链表，具有顺序)
+3. 关键代码
+
+OrderBook里的sellBuckets和buyBuckets(buyBuckets的价格为倒序排列)
+```Java
+   // 将OrderBucket放入到Map中:key为价格
+   private final NavigableMap<Long, OrderBucket> sellBuckets = new TreeMap<>();
+   private final NavigableMap<Long, OrderBucket> buyBuckets = new TreeMap<>(Collections.reverseOrder());
+```
+
+OrderBucket里的LinkedHashMap(存放委托), 存放的订单从排队机获取
+```Java
+    //使用LinkedHashMap保存委托信息(key:委托序号, value:委托类)
+    //LinkedHashMap内维护一个链表，可以按照顺序进行排列
+    private final LinkedHashMap<Long, Order> entries = new LinkedHashMap<>();
+```
 #### 发布撮合结果
-通过MQTT协议进行在总线上进行发布
+通过MQTT协议进行在总线上进行发布,Vertx-mqtt提供了Mqtt-Client
 ### Disruptor进行快速撮合
+Disruptor的使用方式主要是加Handler，注意Handler的顺序，前置风控 -> 撮合 -> 发布处理
 
 [Disruptor核心概念-中文](https://juejin.cn/post/6844903958180265997#heading-11)
 
@@ -68,3 +101,25 @@ JDK自带的UUID在系统吞吐过大时无法满足UUID的唯一性，[TwitterS
 - 使用volatile字段进行写操作，每次写操作后内存会将就的数据flush掉从而保证所有线程拿到的是最新的值
 - 下游消费者对上游消费者进行追踪，下游消费者拿到上游更新过的序列号之后才可以进行修改
 - 总之，Disruptor高性能的原理就在于实现无锁结构
+### 撮合关键代码
+满足撮合的订单：买盘中大于等于报卖价的委托，卖盘中小于等于报买价的委托
+```Java
+    private long preMatch(RbCmd cmd, SortedMap<Long, OrderBucket> matchingBuckets) {
+        int tVol = 0;
+        if (matchingBuckets.size() == 0) {  //没有符合撮合的bucket
+            return tVol;
+        }
+        List<Long> emptyBuckets = Lists.newArrayList();
+        for (OrderBucket bucket : matchingBuckets.values()) {
+            tVol += bucket.match(cmd.volume - tVol, cmd, order -> oidMap.remove(order.getOid()));
+            if (bucket.getTotalVolume() == 0) {   //bucket中的委托耗尽
+                emptyBuckets.add(bucket.getPrice());
+            }
+            if (tVol == cmd.volume) {   //新来的订单所有量被吃掉
+                break;
+            }
+        }
+        emptyBuckets.forEach(matchingBuckets :: remove);
+        return tVol;
+    }
+```

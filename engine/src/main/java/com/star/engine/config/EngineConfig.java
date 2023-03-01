@@ -104,15 +104,10 @@ public class EngineConfig {
         startSeqConn();
     }
 
-    private void initMqttServer() {
-        MqttServer mqttServer = MqttServer.create(vertx);
-        mqttServer.listen(pubPort, pubIp);
-    }
-
     private BusSender busSender;
 
     private void initPub() {
-        busSender = new MQTTBusSenderImpl(pubIp, pubPort, msgCodec, vertx);
+        busSender = new MQTTBusSenderImpl(pubIp, pubPort, msgCodec);
         busSender.startUp();
     }
 

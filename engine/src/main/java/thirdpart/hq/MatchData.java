@@ -1,11 +1,13 @@
 package thirdpart.hq;
 
 import lombok.Builder;
+import lombok.ToString;
 import thirdpart.order.OrderStatus;
 
 import java.io.Serializable;
 
 @Builder
+@ToString
 public class MatchData implements Serializable {
 
     public long timestamp;
