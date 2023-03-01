@@ -38,13 +38,14 @@ public class MQTTBusSenderImpl implements BusSender {
         MqttClient mqttClient = MqttClient.create(vertx);
         mqttClient.connect(port, ip, res -> {
             if (res.succeeded()) {
-                log.info("connect to mqtt bus[ip:{}, port:{}] succeed", ip, port);
                 sender = mqttClient;
+                log.info("connect to mqtt bus[ip:{}, port:{}] succeed", ip, port);
             } else {
                 log.info("connect to mqtt bus[ip:{}, port:{}] fail", ip, port);
                 mqttConnect();
             }
         });
+
         mqttClient.closeHandler(h -> {
             try {
                 TimeUnit.SECONDS.sleep(5);

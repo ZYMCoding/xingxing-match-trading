@@ -15,6 +15,7 @@ import com.star.engine.bean.DBUtil;
 import com.star.engine.bean.orderbook.api.OrderBook;
 import com.star.engine.bean.orderbook.impl.OrderBookImpl;
 import com.star.engine.core.EngineApi;
+import com.star.engine.core.EngineCore;
 import com.star.engine.handler.BaseHandler;
 import com.star.engine.handler.match.StockMatchHandler;
 import com.star.engine.handler.pub.L1PubHandler;
@@ -23,6 +24,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
+import io.vertx.mqtt.MqttServer;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -92,12 +94,19 @@ public class EngineConfig {
         //启动撮合核心
         startEngine();
 
+        //启动总线(MqttServer)
+//        initMqttServer();
+
         //建立总线连接，初始化数据发送
         initPub();
 
         //初始化接受排队机的数据以及连接
         startSeqConn();
+    }
 
+    private void initMqttServer() {
+        MqttServer mqttServer = MqttServer.create(vertx);
+        mqttServer.listen(pubPort, pubIp);
     }
 
     private BusSender busSender;
@@ -149,6 +158,7 @@ public class EngineConfig {
         }
         final BaseHandler pubHandler = new L1PubHandler(matchEventMap, this);
 
+        engineApi = new EngineCore(riskHandler, matchHandler, pubHandler).getEngineApi();
     }
 
 
@@ -222,7 +232,6 @@ public class EngineConfig {
      * 2.支持multicast
      * 3.非虚拟机的网卡
      * 4.有IPV4地址
-     *
      * @return 找出适合接受UDP广播的网卡
      */
     private static NetworkInterface mainInterface() throws Exception {
@@ -244,7 +253,6 @@ public class EngineConfig {
 
     /**
      * 从配置文件中加载属性到类中
-     *
      * @throws IOException 读取文件流的错误
      */
     private void initConfig() throws IOException {

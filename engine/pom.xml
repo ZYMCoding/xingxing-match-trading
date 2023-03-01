@@ -15,11 +15,13 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/io.vertx/vertx-core -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>3.8.5</version>
+            <version>3.9.14</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -69,16 +71,18 @@
             <version>1.7</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.vertx/vertx-amqp-client -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-amqp-client</artifactId>
-            <version>3.8.5</version>
+            <version>3.9.14</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.vertx/vertx-mqtt -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-mqtt</artifactId>
-            <version>3.8.5</version>
+            <version>3.9.14</version>
         </dependency>
 
         <dependency>

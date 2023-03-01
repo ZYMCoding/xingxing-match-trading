@@ -14,7 +14,7 @@ import java.util.List;
 
 @Builder
 @ToString
-public class RbCmd extends Event {
+public class RbCmd {
 
     public long timestamp;
 

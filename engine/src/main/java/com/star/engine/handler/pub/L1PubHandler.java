@@ -12,7 +12,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
-import scala.util.matching.Regex;
 import thirdpart.bean.CommonMsg;
 import thirdpart.hq.L1MarketData;
 import thirdpart.hq.MatchData;

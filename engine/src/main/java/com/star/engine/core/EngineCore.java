@@ -7,6 +7,7 @@ import com.star.engine.bean.RbCmdFactory;
 import com.star.engine.bean.command.RbCmd;
 import com.star.engine.handler.BaseHandler;
 import com.star.engine.handler.exception.DisruptorExceptionHandler;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import net.openhft.affinity.AffinityStrategies;
@@ -20,6 +21,7 @@ import java.util.TimerTask;
 import static com.star.engine.handler.pub.L1PubHandler.HQ_PUB_RATE;
 
 @Log4j2
+@Data
 public class EngineCore {
 
     private final Disruptor<RbCmd> disruptor;
@@ -32,7 +34,6 @@ public class EngineCore {
     public EngineCore(@NonNull final BaseHandler riskHandler,
                       @NonNull final BaseHandler matchHandler,
                       @NonNull final BaseHandler pubHandler
-
     ) {
         this.disruptor = new Disruptor<RbCmd>(
                 new RbCmdFactory(),     //产生实例的工厂方法
