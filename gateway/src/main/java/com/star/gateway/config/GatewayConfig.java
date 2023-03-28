@@ -17,6 +17,7 @@ import thirdpart.codec.api.BodyCodec;
 import thirdpart.fetchserv.api.FetchService;
 
 import java.io.File;
+import java.io.InputStream;
 
 @Log4j2
 @Data
@@ -37,10 +38,10 @@ public class GatewayConfig {
 
     private Vertx vertx = Vertx.vertx();
 
-    public void initConfig(String fileName) throws DocumentException {
+    public void initConfig(InputStream inputStream) throws DocumentException {
         //dom4j对xml进行解析
         SAXReader reader = new SAXReader();
-        Document document = reader.read(new File(fileName));
+        Document document = reader.read(inputStream);
         Element root = document.getRootElement();
         this.id = Short.parseShort(root.element("id").getText());
         this.recvPort = Integer.parseInt(root.element("recvport").getText());

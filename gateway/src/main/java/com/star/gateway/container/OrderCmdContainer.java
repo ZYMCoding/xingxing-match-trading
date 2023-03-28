@@ -18,7 +18,7 @@ public class OrderCmdContainer {
     //私有的构造方法
     private OrderCmdContainer(){}
 
-    //公共的getInsance方法
+    //公共的getInstance方法
     public static OrderCmdContainer getInstance() {
         return ourInstance;
     }

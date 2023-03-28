@@ -90,4 +90,16 @@ public class OrderController {
             return new CounterRes(CounterRes.FAIL, "save failed", null);
         }
     }
+
+    @RequestMapping("/cancelorder")
+    @ResponseBody
+    public CounterRes cancelOrder(@RequestParam int uid,
+                                  @RequestParam int counteroid,
+                                  @RequestParam int code) {
+        if (orderService.cancelOrder(uid, counteroid, code)) {
+            return new CounterRes(CounterRes.SUCCESS, "success", null);
+        } else {
+            return new CounterRes(CounterRes.FAIL, "failed", null);
+        }
+    }
 }

@@ -3,7 +3,7 @@
         <el-form label-width="80px">
             <el-form-item>
                 <h3 :style="direction ===0 ?
-                                'color: #F56C6C' : 'color:67C23A' ">
+                                'color: #F56C6C' : 'color:#67C23A' ">
                     {{direction === 0 ? '买入' : '卖出'}}股票
                 </h3>
             </el-form-item>
@@ -81,8 +81,8 @@ export default {
         handlePrice() {
             if (this.direction === constants.SELL) {
                 let posiArr = this.$store.state.posiData;
-                for (let i = 0, leng = posiArr.length; i < len; i++) {
-                    if (posiArr[i].code == this.code) {
+                for (let i = 0, len = posiArr.length; i < len; i++) {
+                    if (posiArr[i].code === this.code) {
                         this.affordCount = posiArr[i].count;
                     }
                 }

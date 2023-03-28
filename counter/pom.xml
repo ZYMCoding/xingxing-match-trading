@@ -81,6 +81,18 @@
             <version>3.8.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-mqtt</artifactId>
+            <version>3.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>3.8.5</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.alipay.sofa/sofa-rpc-all -->
         <dependency>
             <groupId>com.alipay.sofa</groupId>
@@ -88,9 +100,28 @@
             <version>5.6.3</version>
         </dependency>
 
+        <!-- Eclipse (Goldman Sachs) collections -->
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections-api</artifactId>
+            <version>9.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections</artifactId>
+            <version>9.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.backuity</groupId>
+            <artifactId>matchete-core_2.13.0-RC3</artifactId>
+            <version>1.29.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.backuity</groupId>
+            <artifactId>matchete_2.11</artifactId>
+            <version>1.16</version>
+        </dependency>
     </dependencies>
-
-
 
     <build>
         <plugins>

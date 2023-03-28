@@ -38,7 +38,6 @@ export const queryOrder = () => {
         '/api/orderinfo',
         {uid: sessionStorage.getItem('uid')},
         (code, msg, data) => {
-            // store.state.posiData = data;
             store.commit("updateOrder", data)
         })
 };
@@ -49,8 +48,6 @@ export const queryTrade = () => {
         '/api/tradeinfo',
         {uid: sessionStorage.getItem('uid')},
         (code, msg, data) => {
-            console.log(data);
-            // store.state.posiData = data;
             store.commit("updateTrade", data)
         })
 };
@@ -60,3 +57,8 @@ export const sendOrder = (params,callback) =>{
     return reqRealEndAsync("post",config.real_domain,
         '/api/sendorder',params,callback);
 }
+
+// 委托
+export const cancelOrder = (params,callback) => {
+    return reqRealEndAsync("post", config.real_domain, '/api/cancelorder', params, callback);
+};

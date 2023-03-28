@@ -78,6 +78,7 @@ public class TcpDirectSender {
                     reconnect();
                 });
             } else {
+                log.info("connect failed, please check!");
             }
         }
 
@@ -88,5 +89,4 @@ public class TcpDirectSender {
             });
         }
     }
-
 }

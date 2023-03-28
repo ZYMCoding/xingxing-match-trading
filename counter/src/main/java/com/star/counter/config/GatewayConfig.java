@@ -36,10 +36,14 @@ public class GatewayConfig {
         return new MsgCodecImpl();
     }
 
-    private final Vertx vertx = Vertx.vertx();
+    @Bean
+    public Vertx sendVertx() {
+        return Vertx.vertx();
+    };
 
     @Bean
-    public TcpDirectSender tcpDirectSender() {
-        return new TcpDirectSender(counterProperty.getSendIp(), counterProperty.getSendPort(), vertx);
+    public Vertx socketVertx() {
+        return Vertx.vertx();
     }
+
 }

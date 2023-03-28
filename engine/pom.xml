@@ -85,6 +85,14 @@
             <version>3.9.14</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.vertx/vertx-web -->
+        <!--<dependency>-->
+        <!--    <groupId>io.vertx</groupId>-->
+        <!--    <artifactId>vertx-web</artifactId>-->
+        <!--    <version>3.9.14</version>-->
+        <!--</dependency>-->
+
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>

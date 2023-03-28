@@ -23,4 +23,6 @@ public interface OrderMapper {
      * @return 修改的记录数
      */
     int insertOrder(Map<String, Object> params);
+
+    void updateOrder(long oid, int status);
 }

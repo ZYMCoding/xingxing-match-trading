@@ -14,4 +14,7 @@ public class CounterProperty {
     private String sendIp;
     private int sendPort;
     private short gatewayId;
+    private String subbusIp;
+    private int subbusPort;
+    private int pubPort;
 }

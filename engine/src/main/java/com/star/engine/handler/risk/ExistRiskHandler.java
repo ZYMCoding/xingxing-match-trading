@@ -33,12 +33,13 @@ public class ExistRiskHandler extends BaseHandler {
             return;
         }
         if (cmd.command == CmdType.NEW_ORDER || cmd.command == CmdType.CANCEL_ORDER) {
-            //用户是否存在
+            //非法用户ID
             if (!uidSet.contains(cmd.uid)) {
                 log.info("illegal uid: {}", cmd.uid);
                 cmd.resultCode = CmdResultCode.RISK_INVALID_CODE;
                 return;
             }
+            //非法股票代码
             if (!codeSet.contains(cmd.code)) {
                 log.error("illegal code [{}] exist", cmd.code);
                 cmd.resultCode = CmdResultCode.RISK_INVALID_CODE;

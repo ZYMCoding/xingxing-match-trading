@@ -9,7 +9,6 @@ import thirdpart.order.CmdType;
 import thirdpart.order.OrderCmd;
 
 @Log4j2
-
 public class EngineApi {
 
     private final RingBuffer<RbCmd> ringBuffer;

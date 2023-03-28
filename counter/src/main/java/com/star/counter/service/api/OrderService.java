@@ -3,6 +3,7 @@ package com.star.counter.service.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.star.counter.bean.OrderInfo;
 import thirdpart.order.OrderCmd;
+import thirdpart.order.OrderStatus;
 
 import java.util.List;
 
@@ -30,4 +31,9 @@ public interface OrderService {
      * @return 委托信息是否保存成功
      */
     boolean sendOrder(long uid, short type, long timestamp, int code, byte direction, long price, long volume, byte ordertype);
+
+    void updateOrder(long uid, int counterOid, OrderStatus finalOrderStatus);
+
+    //撤单
+    boolean cancelOrder(int uid, int counteroid, int code);
 }

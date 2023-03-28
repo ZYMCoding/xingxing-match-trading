@@ -11,4 +11,9 @@
         FROM t_trade t, t_stock s
         WHERE t.uid = #{uid} AND t.code = s.code
     </select>
+
+    <insert id="savaTrade">
+        INSERT INTO t_trade(id, uid, code, direction, price, tcount, oid, date, time)
+        VALUES (#{id}, #{uid}, #{code}, #{direction}, #{price}, #{tcount}, #{oid}, #{date}, #{time})
+    </insert>
 </mapper>

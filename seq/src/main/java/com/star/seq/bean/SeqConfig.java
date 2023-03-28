@@ -80,7 +80,6 @@ public class SeqConfig {
         @NonNull
         private ConsumerConfig<FetchService> config;
 
-
         @Override
         public void onConnected(AbstractChannel abstractChannel) {
             String remoteAddr = abstractChannel.remoteAddress().toString();
@@ -107,7 +106,7 @@ public class SeqConfig {
         initConfig();
 
         //初始化集群(Raft算法的排队机集群)
-        starSeqDbCluster();
+        startSeqDbCluster();
 
         //启动下游广播(初始化DatagramSocket，使用vertx进行初始化)
         startMulticast();
@@ -138,7 +137,7 @@ public class SeqConfig {
     /**
      * 启动KVStore
      */
-    private void starSeqDbCluster() {
+    private void startSeqDbCluster() {
         String[] split = serveUrl.split(":");
         String ip = split[0];
         int port = Integer.parseInt(split[1]);
@@ -149,7 +148,7 @@ public class SeqConfig {
                 .withRaftDataPath(dataPath)
                 .withServerAddress(new Endpoint(ip, port))
                 .config();
-        //针对集群中多个Raft的配置，实际中只有一个集群，所以指定了Fake
+        //针对集群中多个store的配置，实际中只有一个集群，所以指定了Fake
         final PlacementDriverOptions placementDriverOptions = PlacementDriverOptionsConfigured.newConfigured()
                 .withFake(true)
                 .config();
@@ -185,9 +184,9 @@ public class SeqConfig {
             //排队机为RPC框架中的消费者
             ConsumerConfig<FetchService> consumerConfig = new ConsumerConfig<FetchService>()
                     .setInterfaceId(FetchService.class.getName())   //连接的接口，上下游通信标准
-                    .setProtocol("bolt")    //RPC通信的协议:bolt
-                    .setTimeout(5000)       //超时设置
-                    .setDirectUrl(url);     //直连地址
+                    .setProtocol("bolt")        //RPC通信的协议:bolt
+                    .setTimeout(5000)           //超时设置
+                    .setDirectUrl(url);         //直连地址
             //可增加多个连接监听器,但列表只放一个
             consumerConfig.setOnConnect(Lists.newArrayList(new FetchChannelListener(consumerConfig)));
             fetchServiceMap.put(url, consumerConfig.refer());    //Consumer第一次连上Provider时Listener中的onConnected不会执行

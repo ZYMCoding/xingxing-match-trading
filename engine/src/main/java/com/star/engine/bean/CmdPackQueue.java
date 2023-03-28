@@ -75,12 +75,11 @@ public class CmdPackQueue {
      * @throws CodecException 解码错误
      */
     private void handle(CmdPack cmdPack) throws CodecException {
-        log.info("recv: {}", cmdPack);
+//        log.info("recv: {}", cmdPack);
         //NACK
         long packNo = cmdPack.getPackNo();
         //上游约定包序号从0开始递增，可通过当前包序号判断是否丢包
-        if (packNo == lastPackNo + 1) {
-            //正常情况
+        if (packNo == lastPackNo + 1) {    //正常情况
             if (CollectionUtils.isEmpty(cmdPack.getOrderCmds())) {
                 return;
             }

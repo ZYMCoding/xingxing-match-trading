@@ -60,7 +60,7 @@ public class EngineCore {
 
         //启动
         disruptor.start();
-        log.info("match engine start");
+        log.info("match engine start successfully!");
 
         //定时任务：发布行情
         new Timer().schedule(new HqPubTask(), 1000, HQ_PUB_RATE);

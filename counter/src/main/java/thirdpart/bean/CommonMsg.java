@@ -16,7 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class CommonMsg implements Serializable {
 
-    //    包头[ 包体长度 int + 校验和 byte + src short+ dst short + 消息类型 short + 消息状态 byte + 包编号 long ]
+    //    包头[ 包体长度 int + 校验和 byte + src short + dst short + 消息类型 short + 消息状态 byte + 包编号 long ]
     //    包体[ 数据 byte[] ]
 
     /**

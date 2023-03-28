@@ -243,6 +243,11 @@ public class EngineConfig {
             }
             return false;
         }).sorted(Comparator.comparing(NetworkInterface::getName)).findFirst().orElse(null);  //找到第一个符合条件的网卡，否则返回空
+        if (networkInterface != null) {
+            log.info("The Network Interface is {}", networkInterface.getName());
+        } else {
+            log.info("No Network Interface available");
+        }
         return networkInterface;
     }
 
