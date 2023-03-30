@@ -68,11 +68,25 @@ public class MatchDataConsumer {
     @PostConstruct
     private void init() {
         EventBus eventBus = socketVertx.eventBus();
+
+        eventBus.consumer(ORDER_DATA_CACHE_ADDR).handler(buffer -> {
+            Buffer body = (Buffer) buffer.body();
+            try {
+                OrderCmd orderCmd = bodyCodec.deserialize(body.getBytes(), OrderCmd.class);
+                log.info("cache order:{}", orderCmd);
+                oidOrderMap.put(orderCmd.oid, orderCmd);
+            } catch (Exception e) {
+                log.error(e);
+            }
+        });
+
         eventBus.consumer(INNER_MATCH_DATA_ADDR).handler(buffer -> {
+            //数据长度判断
             Buffer body = (Buffer) buffer.body();
             if (body.length() == 0) {
                 return;
             }
+
             MatchData[] matchDataArr = null;
             try {
                 matchDataArr = bodyCodec.deserialize(body.getBytes(), MatchData[].class);
@@ -129,7 +143,6 @@ public class MatchDataConsumer {
                 );
             }
         }
-
         //委托变动
         //根据最后一笔Match处理委托
         MatchData finalMatchData = value.get(value.size() - 1);

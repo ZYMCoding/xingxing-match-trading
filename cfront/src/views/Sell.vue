@@ -33,18 +33,18 @@
 
 <script>
 
-import PosiList from '../components/PosiList'
-import OrderWidget from '../components/OrderWidget'
-import OrderBook from '../components/OrderBook'
+    import PosiList from '../components/PosiList'
+    import OrderWidget from '../components/OrderWidget'
+    import OrderBook from '../components/OrderBook'
 
-export default {
-    name: "Sell",
-    components: {
-        PosiList,
-        OrderWidget,
-        OrderBook
+    export default {
+        name: "Sell",
+        components: {
+            PosiList,
+            OrderWidget,
+            OrderBook
+        }
     }
-}
 </script>
 
 <style scoped>

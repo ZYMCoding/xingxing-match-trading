@@ -37,47 +37,49 @@
 
 <script>
 
-import encryptMD5 from 'js-md5';
-import {pwdUpdate, logout} from '../api/loginApi'
+    import encryptMD5 from 'js-md5';
+    import {pwdUpdate, logout} from '../api/loginApi'
 
-export default {
-    name: "PwdSetting",
-    data() {
-        return {
-            form: {
-                oldpassword: '',
-                newpassword: '',
-                newpasswordcfm: '',
-            }
-        }
-    },
-    methods: {
-        logoutCallback(code,msg,data){
-            if(code != 0){
-                this.$message.error(msg);
-            }  else {
-                logout();
+    export default {
+        name: "PwdSetting",
+        data() {
+            return {
+                form: {
+                    oldpassword: '',
+                    newpassword: '',
+                    newpasswordcfm: '',
+                }
             }
         },
-        onSubmit() {
-            if (this.form.newpassword != this.form.newpasswordcfm) {
-                this.$message.warning("两次密码输入不一致，请重新输入");
-                return;
+        methods: {
+            logoutCallback(code,msg,data){
+              if(code != 0){
+                  this.$message.error(msg);
+              }  else {
+                  logout();
+              }
+            },
+            onSubmit() {
+                if (this.form.newpassword != this.form.newpasswordcfm) {
+                    this.$message.warning("两次密码输入不一致，请重新输入");
+                    return;
+                }
+
+                if (this.form.newpassword.length < 4) {
+                    this.$message.warning("密码长度太短，请重新输入");
+                    return;
+                }
+
+                pwdUpdate({
+                        uid: sessionStorage.getItem("uid"),
+                        oldpwd: encryptMD5(this.form.oldpassword),
+                        newpwd: encryptMD5(this.form.newpassword),
+                    },
+                    this.logoutCallback
+                )
             }
-            if (this.form.newpassword.length < 4) {
-                this.$message.warning("密码长度太短，请重新输入");
-                return;
-            }
-            pwdUpdate({
-                    uid: sessionStorage.getItem("uid"),
-                    oldPwd: encryptMD5(this.form.oldpassword),
-                    newPwd: encryptMD5(this.form.newpassword),
-                },
-                this.logoutCallback
-            )
         }
     }
-}
 </script>
 
 <style scoped>

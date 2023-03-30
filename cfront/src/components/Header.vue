@@ -1,76 +1,70 @@
 <template>
     <div class="header">
-        <!-- 第一步 折叠按钮 -->
-<!--        <div class="collapse-btn">-->
-<!--            <i class="el-icon-s-unfold" />-->
-<!--        </div>-->
 
-        <!-- 第二步 折叠按钮 -->
-        <div class="collapse-btn" @click="collapseChage">
+        <!-- 折叠按钮-->
+        <div class="collapse-btn" @click="collapseChange">
             <i v-if="!collapse" class="el-icon-s-fold"></i>
             <i v-else class="el-icon-s-unfold"></i>
         </div>
 
-        <!-- 第三步 LOGO -->
-        <div class="logo">星星证券交易系统</div>
+        <!-- LOGO-->
+        <div class="logo">Gudy证券交易系统</div>
 
-        <!-- 第四步  右侧下拉菜单-->
+        <!-- 用户信息 + 下拉菜单-->
         <div class="header-right">
             <div class="header-user-con">
-                <el-dropdown class="user-name" trigger="click" @command="handleCommand">
-                    <span class="el-dropdown-link">
-                        {{username}}
-                        <i class="el-icon-caret-bottom"></i>
-                    </span>
+                <el-dropdown class="user-name" trigger="click"
+                        @command="handleCommand">
+               <span class="el-dropdown-link">
+                   {{username}}
+                   <i class="el-icon-caret-bottom"/>
+               </span>
+
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
+
                 </el-dropdown>
             </div>
+
         </div>
 
     </div>
+
 </template>
+
 <script>
 
-    import {logout} from "../api/loginApi";
+    import {logout} from '../api/loginApi'
 
     export default {
+        name: "Header",
         data() {
             return {
-                collapse: true,
-                fullscreen: false,
-                message: 2
-            };
-        },
-        computed: {
-            username() {
-                let acc = sessionStorage.getItem("uid");
-                return acc ? acc : "guest";
+                collapse : true,
             }
         },
-        methods: {
-            // 用户名下拉菜单选择事件
-            handleCommand(command) {
-                if (command == 'loginout') {
+        computed:{
+            username(){
+                let acc = sessionStorage.getItem("uid");
+                return acc ? acc : 'guest';
+            }
+        },
+        methods:{
+            //下拉菜单事件响应
+            handleCommand(command){
+                if(command == 'loginout'){
                     logout();
                 }
             },
-            // 侧边栏折叠
-            collapseChage() {
+            collapseChange(){
                 this.collapse = !this.collapse;
-                this.$bus.emit('collapse', this.collapse);
-            },
-        },
-
-        // 第五步  右侧下拉菜单
-        mounted() {
-            if (document.body.clientWidth < 1500) {
-                this.collapseChage();
+                this.$bus.emit("collapse",this.collapse);
             }
         }
-    };
+    }
 </script>
+
 <style scoped>
     .header {
         position: relative;
@@ -132,4 +126,5 @@
     .el-dropdown-menu__item {
         text-align: center;
     }
+
 </style>

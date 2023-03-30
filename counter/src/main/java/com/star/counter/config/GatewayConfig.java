@@ -36,13 +36,18 @@ public class GatewayConfig {
         return new MsgCodecImpl();
     }
 
-    @Bean
-    public Vertx sendVertx() {
-        return Vertx.vertx();
-    };
+//    @Bean
+//    public Vertx sendVertx() {
+//        return Vertx.vertx();
+//    };
+//
+//    @Bean
+//    public Vertx socketVertx() {
+//        return Vertx.vertx();
+//    }
 
     @Bean
-    public Vertx socketVertx() {
+    public Vertx vertx() {
         return Vertx.vertx();
     }
 

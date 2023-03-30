@@ -1,43 +1,59 @@
 <template>
-    <!--  委托列表  -->
     <div>
 
+        <!-- 搜索条件栏-->
         <div class="handle-box">
             <el-row>
+                <!-- 自动提示框-->
                 <el-col :span="4">
                     <code-input/>
                 </el-col>
 
-                <div style="float: left;margin-left: 10px">
+                <!--日期选择器-->
+                <div style="float:left; margin-left: 10px">
                     <el-date-picker
                             size="small"
                             type="date"
                             placeholder="选择日期"
+                            value-format="yyyyMMdd"
                             v-model="query.startDate"
-                            value-format="yyyyMMdd"/>
+                    />
                     -
                     <el-date-picker
                             size="small"
                             type="date"
-                            style="margin-right: 5px"
                             placeholder="选择日期"
+                            value-format="yyyyMMdd"
                             v-model="query.endDate"
-                            value-format="yyyyMMdd"/>
+                    />
+
                 </div>
-                <el-button style="float: left" size="small" type="primary" icon="el-icon-search"
-                           @click="handleSearch">
+
+                <!--搜索按钮-->
+                <el-button style="float: left;margin-left: 10px"
+                           size="small"
+                           type="primary" icon="el-icon-search"
+                           @click="handleSearch"
+                >
                     搜索
                 </el-button>
+
             </el-row>
+
         </div>
 
-
+        <!-- 历史委托查询结果-->
         <el-table
-                :data="tableData.slice( (query.currentPage - 1) * query.pageSize, query.currentPage * query.pageSize)"
+                :data="
+                tableData.slice
+                (
+                    (query.currentPage - 1) * query.pageSize,
+                    query.currentPage * query.pageSize
+                )"
                 border
                 :cell-style="cellStyle"
-                @sort-change="changeTableSort">
-            >
+                @sort-change="changeTableSort"
+        >
             <el-table-column prop="date" label="委托日期" align="center"
                              sortable :sort-orders="['ascending', 'descending']"/>
             <el-table-column prop="time" label="委托时间" align="center"/>
@@ -47,6 +63,8 @@
             <el-table-column prop="ocount" label="委托数量" align="center"/>
             <el-table-column prop="status" label="状态" align="center"/>
         </el-table>
+
+        <!--分页控件-->
         <div class="pagination">
             <el-pagination
                     background
@@ -56,18 +74,20 @@
                     :total="pageTotal"
                     @current-change="handlePageChange"/>
         </div>
+
+
     </div>
 </template>
 
 <script>
 
-    import CodeInput from "./CodeInput";
-    import moment from 'moment';
-
+    import CodeInput from './CodeInput';
 
     export default {
         name: "HisOrderList",
-        components: {CodeInput},
+        components: {
+            CodeInput,
+        },
         data() {
             return {
                 tableData: [
@@ -116,40 +136,11 @@
                     endDate: '',
                 },
                 pageTotal: 4,
-            };
-        },
-        created() {
-            let _today = moment();
-            this.query.endDate = _today.subtract(1, 'days').format('YYYYMMDD');
-            this.query.startDate = _today.subtract(8, 'days').format('YYYYMMDD');
-            this.$bus.on("codeinput-selected", this.updateSelectCode);
-        },
-        beforeDestroy() {
-            this.$bus.off("codeinput-selected", this.updateSelectCode);
+            }
         },
         methods: {
             cellStyle({row, column, rowIndex, columnIndex}) {
                 return "padding:2px;";
-            },
-            updateSelectCode(item) {
-                this.query.code = item.code;
-            },
-            // 触发搜索按钮
-            handleSearch() {
-                this.$set(this.query, 'currentPage', 1);
-                console.log("code=%s,startDate=%s,endDate=%s",
-                    this.query.code,
-                    this.query.startDate,
-                    this.query.endDate,
-                )
-                // this.queryHisOrderPage();
-                // code: this.query.code,
-                //     startDate: this.query.startDate,
-                //     endDate: this.query.endDate,
-            },
-            // 分页导航
-            handlePageChange(val) {
-                this.$set(this.query, 'currentPage', val);
             },
             //处理排序
             changeTableSort(column) {
@@ -177,7 +168,30 @@
                         }
                     });
                 }
-            }
+            },
+
+            // 分页导航
+            handlePageChange(val) {
+                this.$set(this.query, 'currentPage', val);
+            },
+
+            updateSlectedCode(item) {
+                this.query.code = item.code;
+            },
+            handleSearch() {
+
+            },
+
         },
+        created() {
+            this.$bus.on("codeinput-selected", this.updateSlectedCode);
+        },
+        beforeDestroy() {
+            this.$bus.off("codeinput-selected", this.updateSlectedCode);
+        }
     }
 </script>
+
+<style scoped>
+
+</style>

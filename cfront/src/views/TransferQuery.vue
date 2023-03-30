@@ -60,8 +60,6 @@
 
 <script>
 
-    // import moment from 'moment';
-
     export default {
         name: 'TransferQuery',
         data() {
@@ -134,39 +132,33 @@
             handlePageChange(val) {
                 this.$set(this.query, 'currentPage', val);
             },
-            // changeTableSort(column) {
-            //     let sortingType = column.order;
-            //     let fieldName = column.prop;
-            //     if (sortingType == "descending") {
-            //         this.tableData = this.tableData.sort((a, b) => {
-            //                 if (b[fieldName] > a[fieldName]) {
-            //                     return 1;
-            //                 } else if (b[fieldName] === a[fieldName]) {
-            //                     return 0;
-            //                 } else {
-            //                     return -1;
-            //                 }
-            //             }
-            //         );
-            //     } else {
-            //         this.tableData = this.tableData.sort((a, b) => {
-            //             if (b[fieldName] > a[fieldName]) {
-            //                 return -1;
-            //             } else if (b[fieldName] === a[fieldName]) {
-            //                 return 0;
-            //             } else {
-            //                 return 1;
-            //             }
-            //         });
-            //     }
-            // }
+            changeTableSort(column) {
+                let sortingType = column.order;
+                let fieldName = column.prop;
+                if (sortingType == "descending") {
+                    this.tableData = this.tableData.sort((a, b) => {
+                            if (b[fieldName] > a[fieldName]) {
+                                return 1;
+                            } else if (b[fieldName] === a[fieldName]) {
+                                return 0;
+                            } else {
+                                return -1;
+                            }
+                        }
+                    );
+                } else {
+                    this.tableData = this.tableData.sort((a, b) => {
+                        if (b[fieldName] > a[fieldName]) {
+                            return -1;
+                        } else if (b[fieldName] === a[fieldName]) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    });
+                }
+            }
         },
-        created() {
-            let _today = moment();
-            this.query.endDate = _today.format('YYYYMMDD');
-            this.query.startDate = _today.subtract(8, 'days').format('YYYYMMDD');
-        }
-        ,
     }
 </script>
 

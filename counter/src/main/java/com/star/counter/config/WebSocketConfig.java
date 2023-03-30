@@ -6,7 +6,10 @@ import io.vertx.ext.bridge.BridgeEventType;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
+
+import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -31,12 +34,14 @@ public class WebSocketConfig {
 
     @PostConstruct
     private void init() {
-        SockJSHandler sockJSHandler = SockJSHandler.create(socketVertx);
-        BridgeOptions options = new BridgeOptions()
-                .addInboundPermitted(new PermittedOptions().setAddress(L1_MARKET_DATA_PREFIX))   //进请求只有行情请求
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex(ORDER_NOTIFY_ADDR_PREFIX))   //出请求
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex(TRADE_NOTIFY_ADDR_PREFIX));
 
+        //只允许成交 委托的变动通过websocket总线往外发送
+        SockJSBridgeOptions options =  new SockJSBridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress(L1_MARKET_DATA_PREFIX))
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex(ORDER_NOTIFY_ADDR_PREFIX + "[0-9]+"))
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex(TRADE_NOTIFY_ADDR_PREFIX + "[0-9]+"));
+//
+        SockJSHandler sockJSHandler = SockJSHandler.create(socketVertx);
         sockJSHandler.bridge(options, event -> {
             if (event.type() == BridgeEventType.SOCKET_CREATED) {
                 log.info("client : {} connected", event.socket().remoteAddress());
@@ -45,8 +50,13 @@ public class WebSocketConfig {
             }
             event.complete(true);
         });
+
         Router router = Router.router(socketVertx);
         router.route("/eventbus/*").handler(sockJSHandler);
-        socketVertx.createHttpServer().requestHandler(router).listen(counterProperty.getPubPort());
+        log.info("The router info: {}", router.toString());
+        socketVertx.createHttpServer()
+                .requestHandler(router)
+                .listen(counterProperty.getPubPort());
+
     }
 }

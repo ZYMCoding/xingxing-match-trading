@@ -1,5 +1,6 @@
 package com.star.counter.config;
 
+
 import com.star.counter.consumer.MqttBusConsumer;
 import com.star.counter.property.CounterProperty;
 import io.vertx.core.Vertx;

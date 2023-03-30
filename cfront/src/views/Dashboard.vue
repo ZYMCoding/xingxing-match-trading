@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!-- 信息提示-->
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
@@ -7,18 +8,27 @@
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
+
+        <!-- 资金持仓-->
         <el-card class="container">
             <posi-list/>
         </el-card>
+
     </div>
 </template>
 
 <script>
 
-    import PosiList from "../components/PosiList";
+    import PosiList from "../components/PosiList"
 
     export default {
-        name: 'dashboard',
-        components: {PosiList},
-    };
+        name: "Dashboard",
+        components:{
+            PosiList
+        }
+    }
 </script>
+
+<style scoped>
+
+</style>

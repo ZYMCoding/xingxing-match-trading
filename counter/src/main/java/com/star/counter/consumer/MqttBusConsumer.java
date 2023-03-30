@@ -54,7 +54,7 @@ public class MqttBusConsumer {
         MqttClient mqttClient = MqttClient.create(vertx);
         mqttClient.connect(busPort, busIp, res -> {
             if (res.succeeded()) {
-                log.info("connect mqtt bus succeed");
+                log.info("connect mqtt bus succeed to {} {}", busIp, busPort);
                 Map<String, Integer> topoic = Maps.newHashMap();
                 topoic.put(recvAddr, MqttQoS.AT_LEAST_ONCE.value());
                 topoic.put(HQ_ADDR, MqttQoS.AT_LEAST_ONCE.value());

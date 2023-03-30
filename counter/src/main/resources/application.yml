@@ -27,6 +27,6 @@ counter:
   sendIp: 127.0.0.1
   sendPort: 8091
   gatewayId: 1001
-  subbusIp: 127.0.0.1  #mqtt总线ip
+  subbusIp: 47.113.188.108  #mqtt总线ip
   subbusPort: 1883    #mqtt服务器端口
   pubPort: 8501       #与终端交互的端口

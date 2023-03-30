@@ -7,5 +7,6 @@ export const config = {
         host: "localhost",
         port: 8501,
         path: "/eventbus/"
-    }
+    },
+
 }
