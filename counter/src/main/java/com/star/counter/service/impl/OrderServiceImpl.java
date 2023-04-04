@@ -124,6 +124,7 @@ public class OrderServiceImpl implements OrderService {
      * @param volume 量
      * @param ordertype 委托类型
      * @return 委托信息是否保存成功
+     * TODO 需要解决超买/超卖问题
      */
     public boolean sendOrder(long uid, short type, long timestamp, int code, byte direction, long price, long volume, byte ordertype) {
         //具有final字段的类的初始化：类上有lombok的@builder注解，该注解通过生成内部类来进行初始化

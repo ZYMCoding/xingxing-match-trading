@@ -8,7 +8,7 @@
         </div>
 
         <!-- LOGO-->
-        <div class="logo">Gudy证券交易系统</div>
+        <div class="logo">星星证券交易系统</div>
 
         <!-- 用户信息 + 下拉菜单-->
         <div class="header-right">
