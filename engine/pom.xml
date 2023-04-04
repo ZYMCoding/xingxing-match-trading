@@ -139,15 +139,41 @@
             <artifactId>eclipse-collections</artifactId>
             <version>9.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.backuity</groupId>
-            <artifactId>matchete-core_2.13.0-RC3</artifactId>
-            <version>1.29.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.backuity</groupId>
-            <artifactId>matchete_2.11</artifactId>
-            <version>1.16</version>
-        </dependency>
     </dependencies>
+
+    <build>
+        <finalName>engine-1.0-SNAPSHOT</finalName><!-- 导出jar的名字 -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.star.engine.EngineStartup</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

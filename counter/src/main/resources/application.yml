@@ -2,12 +2,14 @@ server:
   port: 8090
 spring:
   datasource:
-    url: jdbc:mysql://47.113.188.108:3306/match_trading?serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://47.113.188.108:3306/match_trading?serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/match_trading?serverTimezone=Asia/Shanghai
     username: root
     password: Zym.141592
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
-    url: redis://Zym.141592@47.113.188.108:6379
+#    url: redis://Zym.141592@47.113.188.108:6379
+    url: redis://Zym.141592@127.0.0.1:6379
     timeout: 6000ms
 mybatis:
   mapper-locations: classpath:com/star/counter/mapper/*.xml
@@ -27,6 +29,7 @@ counter:
   sendIp: 127.0.0.1
   sendPort: 8091
   gatewayId: 1001
-  subbusIp: 47.113.188.108  #mqtt总线ip
+#  subbusIp: 47.113.188.108  #mqtt总线ip
+  subbusIp: 127.0.0.1 #mqtt总线ip
   subbusPort: 1883    #mqtt服务器端口
   pubPort: 8501       #与终端交互的端口

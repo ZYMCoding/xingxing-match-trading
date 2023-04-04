@@ -46,7 +46,6 @@ public class FetchTask extends TimerTask {
         if (CollectionUtils.isEmpty(orderCmds)) {
             return;
         }
-        log.info(orderCmds);
 
         //时间优先(先来的站前面) 价格优先(买单价高先，卖单价低先) 量大优先
         orderCmds.sort(((o1, o2) -> {
@@ -61,6 +60,8 @@ public class FetchTask extends TimerTask {
             res = compareVolume(o1, o2);
             return res;
         }));
+
+        log.info(orderCmds);
 
         try {
             //生成PackNo并打包成Cmd

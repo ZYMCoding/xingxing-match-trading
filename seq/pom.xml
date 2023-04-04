@@ -76,4 +76,34 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <finalName>seq-1.0-SNAPSHOT</finalName><!-- 导出jar的名字 -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <!-- 主类的位置，例如上图文件，主类配置应为： -->
+                                    <!--<mainClass>com.star.seq.SeqStartup1</mainClass>-->
+                                    <!--<mainClass>com.star.seq.SeqStartup2</mainClass>-->
+                                    <mainClass>com.star.seq.SeqStartup3</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

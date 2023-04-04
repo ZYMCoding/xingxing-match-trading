@@ -3,10 +3,11 @@ package com.star.counter.config;
 import com.star.counter.property.CounterProperty;
 import io.vertx.core.Vertx;
 import io.vertx.ext.bridge.BridgeEventType;
+
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 
+import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 
@@ -35,12 +36,14 @@ public class WebSocketConfig {
     @PostConstruct
     private void init() {
 
-        //只允许成交 委托的变动通过websocket总线往外发送
-        SockJSBridgeOptions options =  new SockJSBridgeOptions()
+        Router router = Router.router(socketVertx);
+
+//       只允许成交 委托的变动通过websocket总线往外发送
+        SockJSBridgeOptions options = new SockJSBridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress(L1_MARKET_DATA_PREFIX))
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex(ORDER_NOTIFY_ADDR_PREFIX + "[0-9]+"))
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex(TRADE_NOTIFY_ADDR_PREFIX + "[0-9]+"));
-//
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex("orderchange-[0-9]+"))
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex("tradechange-[0-9]+"));
+
         SockJSHandler sockJSHandler = SockJSHandler.create(socketVertx);
         sockJSHandler.bridge(options, event -> {
             if (event.type() == BridgeEventType.SOCKET_CREATED) {
@@ -50,10 +53,9 @@ public class WebSocketConfig {
             }
             event.complete(true);
         });
-
-        Router router = Router.router(socketVertx);
         router.route("/eventbus/*").handler(sockJSHandler);
         log.info("The router info: {}", router.toString());
+
         socketVertx.createHttpServer()
                 .requestHandler(router)
                 .listen(counterProperty.getPubPort());

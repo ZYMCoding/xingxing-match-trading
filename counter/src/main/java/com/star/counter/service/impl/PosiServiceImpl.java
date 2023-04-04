@@ -48,6 +48,7 @@ public class PosiServiceImpl implements PosiService {
 
     @Override
     public void addPosi(long uid, int code, long volume, long price) {
+        redisStringCache.remove(Long.toString(uid), CacheType.POSI);
         //判断持仓是否已经存在
         PosiInfo posiInfo = posiMapper.queryOnePosi(uid, code);
         if (posiInfo == null) {

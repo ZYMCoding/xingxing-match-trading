@@ -52,12 +52,12 @@ public class MqttBusConsumer {
 
     private void mqttConnect(Vertx vertx, int busPort, String busIp) {
         MqttClient mqttClient = MqttClient.create(vertx);
+        Map<String, Integer> topoic = Maps.newHashMap();
+        topoic.put(recvAddr, MqttQoS.AT_LEAST_ONCE.value());
+        topoic.put(HQ_ADDR, MqttQoS.AT_LEAST_ONCE.value());
         mqttClient.connect(busPort, busIp, res -> {
             if (res.succeeded()) {
                 log.info("connect mqtt bus succeed to {} {}", busIp, busPort);
-                Map<String, Integer> topoic = Maps.newHashMap();
-                topoic.put(recvAddr, MqttQoS.AT_LEAST_ONCE.value());
-                topoic.put(HQ_ADDR, MqttQoS.AT_LEAST_ONCE.value());
                 mqttClient.subscribe(topoic).publishHandler(h -> {
                     CommonMsg msg = msgCodec.decodeFromBuffer(h.payload());
                     if (msg.getChecksum() != checkSum.getCheckSum(msg.getBody())) {

@@ -185,6 +185,7 @@ public class EngineConfig {
         DatagramSocket datagramSocket = vertx.createDatagramSocket(new DatagramSocketOptions());
         datagramSocket.listen(orderRecvPort, "0.0.0.0", asyncRes -> {
             if (asyncRes.succeeded()) {
+                log.info("UDP listen succeed!");
                 //处理接收到的数据
                 datagramSocket.handler(packet -> {
                     Buffer udpData = packet.data();
@@ -205,10 +206,11 @@ public class EngineConfig {
                     //组播
                     datagramSocket.listenMulticastGroup(
                             orderRecvIp,        //排队机地址
+//                            "0.0.0.0",
                             mainInterface().getName(),   //需要监听的网卡名字
                             null,           //监听的地址(不需要)
                             asyncRes2 -> {  //处理器进行判断，看是否加入组播
-                                log.info("listen succeed {}", asyncRes2.succeeded());
+                                log.info("UDP listen from {}: {} succeed? {}",orderRecvIp, orderRecvPort, asyncRes2.succeeded());
                             }
                     );
                 } catch (Exception e) {

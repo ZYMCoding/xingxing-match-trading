@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.star.counter.bean.OrderInfo;
-import com.star.counter.bean.PosiInfo;
 import com.star.counter.cache.CacheType;
 import com.star.counter.cache.RedisStringCache;
 import com.star.counter.gateway.MsgTrans;
@@ -61,6 +60,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     BodyCodec bodyCodec;
 
+    @Autowired
+    Vertx sendVertx;
+
     @Override
     public List<OrderInfo> getOrderListByUid(long uid) throws JsonProcessingException {
         String suid = Long.toString(uid);
@@ -103,6 +105,7 @@ public class OrderServiceImpl implements OrderService {
         params.put("date", TimeformatUtil.yyyyMMdd(orderCmd.timestamp));
         params.put("time", TimeformatUtil.hhMMss(orderCmd.timestamp));
         int count = orderMapper.insertOrder(params);
+        redisStringCache.remove(Long.toString(orderCmd.uid), CacheType.ORDER);
         if (count > 0) {
             return Integer.parseInt(params.get("id").toString());
         } else {
@@ -164,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
             if (serialize == null) {
                 return false;
             }
-//            Vertx.vertx().eventBus().send(ORDER_DATA_CACHE_ADDR, Buffer.buffer(serialize));
+            sendVertx.eventBus().send(ORDER_DATA_CACHE_ADDR, Buffer.buffer(serialize));
 
             // 打包委托和发送数据(orderCmd -> commonMsg -> TCP数据流)
             msgTrans.sendOrder(orderCmd);
