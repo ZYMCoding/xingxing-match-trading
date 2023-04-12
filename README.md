@@ -1,4 +1,4 @@
-# Element-ui + Spring Cloud + Vertx 的撮合交易系统
+# Element-ui + Spring Boot + Vertx 的撮合交易系统
 ## 体验地址：http://47.113.188.108/
 账户1：uid：10000546 password：zxc123
 
